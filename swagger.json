@@ -1,0 +1,223 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "Email API"
+  },
+  "paths": {
+    "/api/auth": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Authenticate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userCredential",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/UserCredential"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid email or password"
+          },
+          "401": {
+            "description": "Email or password does not exists"
+          }
+        }
+      }
+    },
+    "/api/email": {
+      "get": {
+        "tags": [
+          "Email"
+        ],
+        "operationId": "Get",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "summary": "Get all emails sent to the authenticated user",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns all email sent to the authenticated user",
+            "schema": {
+              "$ref": "#/definitions/Emails"
+            }
+          },
+          "401": {
+            "description": "Invalid access token"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Email"
+        ],
+        "operationId": "Post",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "UserCredential": {
+      "required": [
+        "email",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "test@email.com",
+          "description": "Email Address of the user in plain text"
+        },
+        "password": {
+          "type": "string",
+          "example": "samplepassword123",
+          "description": "Password of the user in plain text"
+        }
+      }
+    },
+    "Email": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "uniqueItems": false,
+          "type": "array",
+          "description": "List of the recipient of the email",
+          "example": [
+            "test@email.com",
+            "someone@domain.com"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender of the email",
+          "example": "sender@email.com"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the email",
+          "example": "Hello world!"
+        },
+        "message": {
+          "type": "string",
+          "description": "The body of the email",
+          "example": "Hi! I hope this email finds you well."
+        }
+      }
+    },
+    "Emails": {
+      "type": "array",
+      "example": [
+        {
+          "to": [
+            "sample@email.com"
+          ],
+          "from": "sfernandez@you-source.com",
+          "subject": "RE: my first email",
+          "message": "I accidentally sent it to someone"
+        },
+        {
+          "to": [
+            "sample@email.com",
+            "someone@domain.com"
+          ],
+          "from": "sfernandez@you-source.com",
+          "subject": "my first email",
+          "message": "first email that I sent to you"
+        }
+      ],
+      "items": {
+        "$ref": "#/definitions/Email"
+      }
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email address of the authenticated user",
+          "example": "test@email.com"
+        },
+        "token_type": {
+          "type": "string",
+          "example": "JWT",
+          "description": "Type of token"
+        },
+        "access_token": {
+          "type": "string",
+          "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+          "description": "Access token used to access secured endpoints"
+        },
+        "expires_in": {
+          "type": "integer",
+          "example": "1563084162",
+          "description": "Expiration time of token in Unix Timestamp"
+        }
+      }
+    }
+  }
+}
